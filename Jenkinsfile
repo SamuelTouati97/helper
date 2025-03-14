@@ -1,20 +1,20 @@
 pipeline {
-    agent any  // Utilisation d'un agent générique
+    agent {
+        docker {
+            image 'node:21.7.3'
+            label 'docker'  // S'assurer que l'agent est capable de démarrer Docker
+        }
+    }
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
-
         stage('Build') {
             steps {
-                script {
-                    docker.image('node:21.7.3').inside {
-                        sh 'npm install'
-                        sh 'npm test'
-                    }
-                }
+                sh 'npm install'
+                sh 'npm test'
             }
         }
     }
