@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'node:21.7.3'
+        }
+    }
 
     stages {
         stage('Checkout') {
