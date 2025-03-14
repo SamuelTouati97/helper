@@ -6,6 +6,7 @@ USER root
 
 # Ensure the docker group exists, then add the Jenkins user to it
 RUN groupadd docker && usermod -aG docker jenkins
+RUN usermod -aG docker jenkins
 
 # Switch back to the jenkins user
 USER jenkins
