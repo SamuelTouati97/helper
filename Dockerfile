@@ -1,19 +1,17 @@
-FROM node:21.7.3
+# Use the official Jenkins LTS image as the base
+FROM jenkins/jenkins:lts
 
+# Switch to root to install Docker
+USER root
 
-WORKDIR /app
+# Install Docker (dependencies and Docker itself)
+RUN apt-get update && \
+    apt-get install -y apt-transport-https ca-certificates curl software-properties-common && \
+    curl -fsSL https://get.docker.com -o get-docker.sh && \
+    sh get-docker.sh && \
+    usermod -aG docker jenkins
 
+# Switch back to the jenkins user
+USER jenkins
 
-COPY package.json package-lock.json ./
-
-
-RUN npm install --only=production
-
-
-COPY . .
-
-
-EXPOSE 4000
-
-
-CMD ["node", "helper.js"]
+# Optionally, run the Jenkins server with Docker already installed

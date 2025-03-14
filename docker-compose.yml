@@ -22,7 +22,7 @@ services:
       - ./plugins.txt:/usr/share/jenkins/ref/plugins.txt 
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false  # Optional to skip the setup wizard
+      # - JAVA_OPTS=-Djenkins.install.runSetupWizard=false  # Optional to skip the setup wizard
       - DOCKER_HOST=unix:///var/run/docker.sock
     networks:
       - app_network
