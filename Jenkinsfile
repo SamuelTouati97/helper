@@ -1,7 +1,10 @@
 pipeline {
-    agent {
-        docker { image 'node:21.7.3' } 
-    }
+    agent any
+
+    // environment {
+    //     DOCKER_REGISTRY = 'samueltouati'
+    //     DOCKER_IMAGE = 'helper'
+    // }
 
     stages {
         stage('Checkout') {
@@ -13,11 +16,12 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    sh 'npm install'
+                    sh 'sudo apt npm install npm'
                     sh 'npm test'
                 }
             }
         }
+
 
         stage('Build') {
             steps {

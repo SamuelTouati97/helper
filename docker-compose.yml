@@ -25,7 +25,7 @@ services:
       - JAVA_OPTS=-Djenkins.install.runSetupWizard=false  # Optional to skip the setup wizard
     networks:
       - app_network
-    user: root
+    
     
 networks:
   app_network:
