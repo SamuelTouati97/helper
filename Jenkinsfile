@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:21.7.3'
-        }
-    }
-
+    agent any  // Utilisation d'un agent générique
     stages {
         stage('Checkout') {
             steps {
@@ -12,26 +7,15 @@ pipeline {
             }
         }
 
-        stage('Test') {
-            steps {
-                sh 'npm install'
-                sh 'npm test'
-            }
-        }
-
         stage('Build') {
             steps {
-                sh 'npm run build'
+                script {
+                    docker.image('node:21.7.3').inside {
+                        sh 'npm install'
+                        sh 'npm test'
+                    }
+                }
             }
-        }
-    }
-
-    post {
-        success {
-            echo '✅ Build et push réussis !'
-        }
-        failure {
-            echo '❌ Une erreur est survenue...'
         }
     }
 }
