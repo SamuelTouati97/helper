@@ -1,4 +1,5 @@
-git
+docker-plugin
+docker-commons
 docker-workflow
-blueocean
-pipeline-model-definition
+pipeline-stage-view
+git
