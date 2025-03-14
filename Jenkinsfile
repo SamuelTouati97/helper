@@ -2,8 +2,9 @@ pipeline {
     agent {
         docker {
             image 'node:21.7.3'
-            registryCredentials('docker-hub-credentials')  // Use the credentials ID here
-            args '-v /var/run/docker.sock:/var/run/docker.sock'  // Mount Docker socket
+            registryCredentialsId 'docker-hub-credentials'  // Use the credentials ID here
+            registryUrl 'https://index.docker.io/v1/'       // Docker Hub URL, adjust for private registries if needed
+            args '-v /var/run/docker.sock:/var/run/docker.sock'  // Mount Docker socket for Docker commands
         }
     }
 
