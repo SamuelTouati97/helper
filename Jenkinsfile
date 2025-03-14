@@ -2,8 +2,9 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'samueltouati/helper'
-        DOCKER_CREDENTIALS_ID = 'docker-hub-credentials'
+        DOCKER_IMAGE = "samueltouati/helper" 
+        DOCKER_TAG = "latest" 
+        DOCKER_HUB_CREDENTIALS = "docker_hub_credentials" 
     }
 
     stages {
@@ -15,31 +16,42 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t $DOCKER_IMAGE ."
+                script {
+                    // Construction de l'image Docker
+                    sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+                }
             }
         }
 
         stage('Login to Docker Hub') {
             steps {
-                withCredentials([string(credentialsId: DOCKER_CREDENTIALS_ID, variable: 'DOCKERHUB_PASSWORD')]) {
-                    sh "echo $DOCKERHUB_PASSWORD | docker login -u tonDockerHubUsername --password-stdin"
+                script {
+                    // Connexion à Docker Hub avec les credentials Jenkins
+                    docker.withRegistry('', DOCKER_HUB_CREDENTIALS) {
+                        echo "Connected to Docker Hub"
+                    }
                 }
             }
         }
 
-        stage('Push to Docker Hub') {
+        stage('Push Docker Image') {
             steps {
-                sh "docker push $DOCKER_IMAGE"
+                script {
+                    // Pousser l'image vers Docker Hub
+                    docker.withRegistry('', DOCKER_HUB_CREDENTIALS) {
+                        sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                    }
+                }
             }
         }
     }
 
     post {
         success {
-            echo '✅ Image Docker poussée avec succès sur Docker Hub !'
+            echo '✅ Build and Push to Docker Hub succeeded!'
         }
         failure {
-            echo '❌ Échec du pipeline...'
+            echo '❌ Something went wrong...'
         }
     }
 }
