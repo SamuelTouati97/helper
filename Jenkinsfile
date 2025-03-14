@@ -1,43 +1,32 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKER_REGISTRY = 'samueltouati'
-        DOCKER_IMAGE = 'helper'
-    }
+    // environment {
+    //     DOCKER_REGISTRY = 'samueltouati'
+    //     DOCKER_IMAGE = 'helper'
+    // }
 
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/SamuelTouati97/helper.git'
+                checkout scm
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Test') {
             steps {
                 script {
-                    // Construire l'image Docker
-                    sh 'docker build -t $DOCKER_REGISTRY/$DOCKER_IMAGE:latest .'
+                    sh 'sudo npm install'
+                    sh 'npm test'
                 }
             }
         }
 
-        stage('Login to Docker Hub') {
-            steps {
-                script {
-                    // Connexion à Docker Hub avec les credentials
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USER --password-stdin'
-                    }
-                }
-            }
-        }
 
-        stage('Push Docker Image') {
+        stage('Build') {
             steps {
                 script {
-                    // Pousser l'image sur Docker Hub
-                    sh 'docker push $DOCKER_REGISTRY/$DOCKER_IMAGE:latest'
+                    sh 'npm run build'
                 }
             }
         }
