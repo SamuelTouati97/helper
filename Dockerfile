@@ -1,10 +1,13 @@
-FROM jenkins/jenkins:lts
+FROM node:21.7.3
 
-USER root
+WORKDIR /app
 
-# Installer Docker CLI
-RUN apt-get update && \
-    apt-get install -y docker.io && \
-    usermod -aG docker jenkins
+COPY package.json package-lock.json ./
 
-USER jenkins
+RUN npm install --only=production
+
+COPY . .
+
+EXPOSE 4000
+
+CMD ["node", "helper.js"]

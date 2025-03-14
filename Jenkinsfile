@@ -1,10 +1,9 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:21.7.3'
-            
-            args '-v /var/run/docker.sock:/var/run/docker.sock'  
-        }
+    agent any
+
+    environment {
+        DOCKER_IMAGE = 'tonDockerHubUsername/tonRepoDockerHub'
+        DOCKER_CREDENTIALS_ID = 'docker-hub-credentials'
     }
 
     stages {
@@ -14,26 +13,33 @@ pipeline {
             }
         }
 
-        stage('Test') {
+        stage('Build Docker Image') {
             steps {
-                sh 'npm install'
-                sh 'npm test'
+                sh "docker build -t $DOCKER_IMAGE ."
             }
         }
 
-        stage('Build') {
+        stage('Login to Docker Hub') {
             steps {
-                sh 'npm run build'
+                withCredentials([string(credentialsId: DOCKER_CREDENTIALS_ID, variable: 'DOCKERHUB_PASSWORD')]) {
+                    sh "echo $DOCKERHUB_PASSWORD | docker login -u tonDockerHubUsername --password-stdin"
+                }
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                sh "docker push $DOCKER_IMAGE"
             }
         }
     }
 
     post {
         success {
-            echo '✅ Build et push réussis !'
+            echo '✅ Image Docker poussée avec succès sur Docker Hub !'
         }
         failure {
-            echo '❌ Une erreur est survenue...'
+            echo '❌ Échec du pipeline...'
         }
     }
 }
